@@ -1,0 +1,142 @@
+.containerProfile {
+  display: flex;
+  background-color: #f5f2f2;
+  border-radius: 5px;
+  padding: .8em;
+  align-items: center;
+  margin-bottom: 1em;
+  font-size: 12px;
+}
+
+.label-avatar {
+  width: 280px;
+  height: 280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.label-avatar input {
+  display: none;
+}
+
+.label-avatar span {
+  z-index: 99;
+  position: absolute;
+  opacity: 0.7;
+  transition: all .5s;
+}
+
+.label-avatar span:hover {
+  opacity: 1;
+  transform: scale(1.4);
+}
+
+.containerProfile .grupo {
+  display: grid !important;
+  float: left;
+  margin: 5px 1%;
+}
+
+.containerProfile .nome {
+  width: 150px;
+  margin-bottom: 0px;
+}
+
+.containerProfile .email {
+  width: 300px;
+  margin-bottom: 0px;
+}
+
+.containerProfile .grupoBTN {
+  width: 90%;
+  margin: 0px 10px;
+  display: flex;
+  margin-top: 7px;
+}
+
+.containerProfile .btn-register {
+  padding: 5px 5px;
+  height: 35px;
+  border: 0;
+  border-radius: 10px;
+  background-color: rgb(185, 183, 183);
+  color: #181c2e;
+  font-size: 1.3em;
+  width: 150px;
+  margin-top: 15px;
+}
+
+.container  {
+  display: flex;
+  background-color: #f5f2f2;
+  border-radius: 5px;
+  padding: .8em;
+  align-items: center;
+  margin-bottom: 1em;
+  font-size: 12px;
+}
+
+.container .logout-btn {
+  padding: 5px 5px;
+  height: 35px;
+  border: 0;
+  border-radius: 10px;
+  background-color: rgb(185, 183, 183);
+  color: #181c2e;
+  font-size: 1.3em;
+  margin-left: 10px;
+  width: 150px;
+}
+
+
+.form-profile img {
+  margin-bottom: 1em;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.form-profile label {
+  margin-bottom: 5px;
+  font-size: 1.1em;
+}
+
+.form-profile input,
+.form-profile textarea,
+.form-profile select {
+  margin-bottom: 1em;
+  padding: 5px 5px;
+  border: 0;
+  border-radius: 5px;
+  max-width: 600px;
+  border: 1px solid #CCC;
+  font-size: 1.2em;
+}
+
+.form-profile input:disabled {
+  cursor: not-allowed;
+}
+
+.form-profile button {
+  max-width: 600px;
+}
+
+.new2 {
+  padding: 8px 20px;
+  background-color: transparent;
+  border: 1px solid #121212;
+  border-radius: 5px;
+  font-size: 1.5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+
+
+  /*float:right;*/
+  /*margin-bottom: 1.5em;*/
+  /*background-color: #83bf02;*/
+  /*font-weight: 600;*/
+}

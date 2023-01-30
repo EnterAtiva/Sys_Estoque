@@ -1,0 +1,266 @@
+
+
+.containerFAM {
+  display: flex;
+  margin-top: 0px;
+  margin-bottom: 1em;
+  background-color: #f5f2f2;
+  border-radius: 5px;
+  padding: .8em;
+  max-width: 100%;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.containerFAM .label {
+  font-size: 0.65em; 
+  /*align-content: flex-start;*/
+}
+
+.containerFAM .input,
+.containerFAM .select {
+  font-size: 1.2em;
+  padding: 0.4em;
+}
+
+.containerFAM .grupo {
+  display: grid !important;
+  float: left;
+  margin: 5px 1%;
+}
+
+.containerFAM .codigo {
+  width: 60px;
+  text-align-last: center;
+  margin-bottom: 0px;
+}
+
+.containerFAM .familia {
+  /*max-width: 350px !important;*/
+  /*padding-right: 300px;*/
+  width: 400px;
+  margin-bottom: 0px;
+}
+
+.containerFAM .grupoBTN {
+  width: 90%;
+  margin: 0px 10px;
+  display: flex;
+  margin-top: 7px;
+}
+
+.containerFAM .btn-register {
+  padding: 5px 5px;
+  height: 35px;
+  border: 0;
+  border-radius: 10px;
+  background-color: rgb(185, 183, 183);
+  color: #181c2e;
+  font-size: 1.2em;
+  width: 200px;
+}
+
+.containerFAM .btn-register2 {
+  padding: 5px 5px;
+  height: 35px;
+  border: 0;
+  border-radius: 10px;
+  background-color: rgb(185, 183, 183);
+  color: #181c2e;
+  font-size: 1.2em;
+  margin-left: 10px;
+  width: 200px;
+}
+
+.form-familia {
+  display: flex;
+  margin-top: 5px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.form-familia label {
+  margin-bottom: .5em;
+  font-size: 1.1em;
+}
+
+.form-familia input,
+.form-familia select {
+  margin-bottom: 1em;
+  padding: .5em;
+  border-radius: 5px;
+  max-width: 600px;
+  font-size: 1.1em;
+  border: 1px solid #CCC;
+}
+
+.form-familia img {
+  margin-bottom: 1em;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.form-familia input:disabled {
+  cursor: not-allowed;
+}
+
+.form-familia button {
+  max-width: 600px;
+}
+
+.dashboard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.dashboard span {
+  margin: 2em 0;
+  font-weight: 600;
+  font-size: 1.2em;
+}
+
+.h1 {
+  text-align: center;
+  padding: 10px;
+}
+
+.table_Famil {
+  border: 1px solid #CCC;
+  border-collapse: collapse;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  table-layout: fixed;
+  margin-left: 220px;
+  max-width: 80%;
+}
+
+.table_Famil caption {
+  font-size: 1.4em;
+  margin: .5em 0 .75em;
+}
+
+.table_Famil tr {
+  /*background-color: #f8f8f8;*/
+  padding: .35em;
+}
+
+.table_Famil th,
+.table_Famil td {
+  border: 1px solid rgb(151, 150, 150);
+  padding: .62em;
+  text-align: center;
+  font-size:  .85em;
+  padding-top: 4px;
+  padding-bottom: 4px;  
+}
+
+.table_Famil th {
+  background-color: rgb(182, 180, 180);
+  font-size: .85em;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.table_Famil td .action {
+  border: 0;
+  padding: 5px;
+  margin-right: 2px;
+  align-items: center;
+  border-radius: 4px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.table_Famil td .action svg {
+  vertical-align: middle;
+}
+
+.table_Famil td .badge {
+  padding: 3px;
+  border-radius: 3px;
+  color: #FFF;
+}
+
+.thead_Famil th:nth-child(1) {
+  width: 10%;
+}
+
+.thead_Famil th:nth-child(2) {
+  width: 50%;
+}
+
+.tbody_Famil td:nth-child(2) {
+  text-align: left;
+}
+
+.thead_Famil th:nth-child(3) {
+  width: 15%;
+}
+
+.tbody_Famil td:nth-child(3) {
+  text-align: left;
+}
+
+.thead_Famil th:nth-child(4) {
+  width: 15%;
+}
+
+.thead_Famil th:nth-child(5) {
+  width: 10%;
+}
+
+
+@media screen and (max-width: 600px) {
+  .table_Famil {
+    margin-left: 20px;
+    border: 0;
+  }
+
+  .table_Famil caption {
+    font-size: 1.3em;
+  }
+
+  .table_Famil .thead_Famil {
+    border: none;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+
+  .table_Famil tr {
+    border-bottom: 3px solid #ddd;
+    display: block;
+    margin-bottom: .65em;
+  }
+
+  .table_Famil td {
+    border-bottom: 1px solid #DDD;
+    display: block;
+    font-size: .8em;
+    text-align: right;
+  }
+
+  .tbody_Famil td:nth-child(2),
+  .tbody_Famil td:nth-child(3) {
+    text-align: right;
+  }
+
+  .table_Famil td::before {
+    content: attr(data-label);
+    float: left;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  .table_Famil td:last-child {
+    border-bottom: 0;
+  }
+
+}
