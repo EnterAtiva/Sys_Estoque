@@ -3,6 +3,7 @@ import firebase from '../../services/firebaseConnection';
 import './familia.css';
 import Title from '../../components/Title';
 import Cadastro from '../../components/Menus/Cadastro';
+import Principal from '../../components/Menus/Principal';
 import { toast } from 'react-toastify';
 import { FiEdit2 } from 'react-icons/fi';
 import { RiDeleteBin3Line, RiTeamFill } from 'react-icons/ri';
@@ -156,7 +157,8 @@ export default function Familia() {
 
   return (
     <div>
-      <Cadastro />
+      {/*<Cadastro />*/}
+      <Principal />
       <div className="content">
         <h1>Mancini & Trindade</h1>
         <Title name="Cadastro de Famílias">

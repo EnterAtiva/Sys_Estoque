@@ -9,8 +9,6 @@ import { FiMessageSquare, FiPlus, FiSearch, FiEdit2 } from 'react-icons/fi';
 import { RiArrowLeftRightFill, RiArticleFill, RiAlignJustify } from 'react-icons/ri';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
-//import firebase from '../../services/firebaseConnection';
-//import Modal from '../../components/Modal';
 
 
 export default function Menubase() {
@@ -33,9 +31,9 @@ export default function Menubase() {
           <Title name="Menus">
             <RiAlignJustify size={25} />
           </Title>
-          <div className="container dashboard">
+          {/*<div className="container dashboard">
             <span>...</span>
-          </div>
+          </div>*/}
         </div>
       </div>
     )
@@ -45,14 +43,13 @@ export default function Menubase() {
       <div>
         <Cadastro />
         <div className="content">
-        <h1>Mancini & Trindade</h1>
+          <h1>Mancini & Trindade</h1>
           <Title name="Menus de cadastros">
             <RiArticleFill size={25} />
           </Title>
-
-          <div className="container dashboard">
+          {/*<div className="container dashboard">
             <span>...</span>
-          </div>
+          </div>*/}
         </div>
       </div>
     )
@@ -62,13 +59,13 @@ export default function Menubase() {
       <div>
         <Movimento />
         <div className="content">
-        <h1>Mancini & Trindade</h1>
+          <h1>Mancini & Trindade</h1>
           <Title name="Movimentação dos produtos">
             <RiArrowLeftRightFill size={25} />
           </Title>
-          <div className="container dashboard">
+          {/*<div className="container dashboard">
             <span>...</span>
-          </div>
+          </div>*/}
         </div>
       </div>
     )
@@ -78,13 +75,13 @@ export default function Menubase() {
       <div>
         <Principal />
         <div className="content">
-        <h1>Mancini & Trindade</h1>
+          <h1>Mancini & Trindade</h1>
           <Title name="Menus">
             <RiAlignJustify size={25} />
           </Title>
-          <div className="container dashboard">
+          {/* <div className="container dashboard">
             <span>...</span>
-          </div>
+          </div>*/}
         </div>
       </div>
     )
