@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import firebase from '../../services/firebaseConnection';
 import { useHistory, useParams } from 'react-router-dom';
-import Movimento from '../../components/Menus/Movimento';
+import Principal from '../../components/Menus/Principal';
 import Title from '../../components/Title';
 import { AuthContext } from '../../contexts/auth';
 import { toast } from 'react-toastify';
@@ -10,6 +10,7 @@ import { FiEdit2 } from 'react-icons/fi';
 import { RiDeleteBin3Line } from 'react-icons/ri';
 import { FaBox, FaArrowCircleLeft } from 'react-icons/fa';
 import { format, set } from 'date-fns';
+import CriaPDF from './report';
 import {
   doc,
   setDoc,
@@ -36,6 +37,7 @@ export default function Entrada() {
   const [codigo, setCodigo] = useState('');
   const [ano, setAno] = useState('');
   const [mes, setMes] = useState('');
+  const [anoMes, setAnoMes] = useState('');
   const [qtdeCompra, setQtdeSaida] = useState('');
   const [qtdeEstoque, setQtdeEstoque] = useState('');
   const [valorDaCompra, setValorDaSaida] = useState('');
@@ -60,7 +62,10 @@ export default function Entrada() {
 
   useEffect(() => {
     async function loadClientes() {
-      await firebase.firestore().collection('cliente').orderBy('tipo').orderBy('nomeFantasia', 'asc').where("tipo", "!=", "Fornecedor")
+      await firebase.firestore().collection('cliente')
+        .orderBy('tipo')
+        .orderBy('nomeFantasia', 'asc')
+        .where("tipo", "!=", "Fornecedor")
         .get()
         .then((snapshot) => {
           let lista = [];
@@ -92,27 +97,31 @@ export default function Entrada() {
 
   useEffect(() => {
     async function loadProdutos() {
-      const unsub = onSnapshot(firebase.firestore().collection("produto").orderBy('nome', 'asc'), (snapshot) => {
-        let listaProduto = [];
+      const unsub = onSnapshot(firebase.firestore().collection("produto")
+        .orderBy('nome', 'asc'),
+        (snapshot) => {
+          let listaProduto = [];
 
-        snapshot.forEach((doc) => {
-          listaProduto.push({
-            id: doc.id,
-            codigo: doc.data().codigo,
-            nome: doc.data().nome,
-            conversao: doc.data().conversao
+          snapshot.forEach((doc) => {
+            listaProduto.push({
+              id: doc.id,
+              codigo: doc.data().codigo,
+              nome: doc.data().nome,
+              conversao: doc.data().conversao,
+              operador: doc.data().operador,
+              unid: doc.data().tipo
+            })
           })
-        })
 
-        if (listaProduto.length === 0) {
-          console.log('NENHUM PRODUTO ENCONTRADO...');
-          setProdutos([{ id: '1', nome: 'Sem cadastros...' }]);
+          if (listaProduto.length === 0) {
+            console.log('NENHUM PRODUTO ENCONTRADO...');
+            setProdutos([{ id: '1', nome: 'Sem cadastros...' }]);
+            setLoadProdutos(false);
+            return;
+          }
+          setProdutos(listaProduto);
           setLoadProdutos(false);
-          return;
-        }
-        setProdutos(listaProduto);
-        setLoadProdutos(false);
-      })
+        })
     }
     loadProdutos();
     loadCodigo();
@@ -132,16 +141,28 @@ export default function Entrada() {
     }
   }
 
+  function buscaAnoMes() {
+    let ano = document.getElementById("ano");
+    let vlAno = ano.options[ano.selectedIndex].text;
+
+    let mes = document.getElementById("mes");
+    let vlMes = mes.options[mes.selectedIndex].text;
+
+    setAnoMes(vlMes + " de " + vlAno);
+  }
+
   //Chamado quando troca o ANO
   async function trocaAno(e) {
     await setAno(e.target.value);
     carregaListaSaidas()
+    buscaAnoMes()
   }
 
   //Chamado quando troca o MÊS
   async function trocaMes(e) {
     await setMes(e.target.value);
     carregaListaSaidas()
+    buscaAnoMes()
   }
 
   function carregaListaSaidas() {
@@ -149,6 +170,7 @@ export default function Entrada() {
     let vlAno = ano.value;
     let mes = document.getElementById("mes");
     let vlMes = mes.value;
+
     if (vlAno !== 0 && vlMes !== 0) {
       const unsub = onSnapshot(firebase.firestore().collection("estoque")
         .orderBy('fornecedor', 'asc')
@@ -418,6 +440,7 @@ export default function Entrada() {
             produtoCod: produtos[produtosSelected].codigo,
             qtdeCompra: '0,000',
             conversao: '0,000',
+            qtdeFardo: '0,0',
             qtdeEstoque: qtdeEstoque,
             valorDaCompra: valorDaCompra,
             valorIpi: '0,00',
@@ -429,7 +452,8 @@ export default function Entrada() {
             valorEstAtual: valorEstAtual,
             periodo: parseInt(ano.concat(mes)),
             cadastro: new Date(),
-            user: user.nome
+            user: user.nome,
+            unid: produtos[produtosSelected].unid
           })
           .then(() => {
             toast.success('Movimento de saida de estoque editado com sucesso!');
@@ -469,6 +493,7 @@ export default function Entrada() {
           produtoCod: produtos[produtosSelected].codigo,
           qtdeCompra: '0,000',
           conversao: '0,000',
+          qtdeFardo: '0,0',
           qtdeEstoque: qtdeEstoque,
           valorDaCompra: valorDaCompra,
           valorIpi: '0,00',
@@ -480,7 +505,8 @@ export default function Entrada() {
           valorEstAtual: valorEstAtual,
           periodo: parseInt(ano.concat(mes)),
           cadastro: new Date(),
-          user: user.nome
+          user: user.nome,
+          unid: produtos[produtosSelected].unid
         })
         .then(() => {
           toast.success('Movimento de saida criado com sucesso!');
@@ -521,10 +547,10 @@ export default function Entrada() {
 
   return (
     <div>
-      <Movimento />
+      <Principal />
       <div className="content">
         <h1>Mancini & Trindade</h1>
-        <Title name="Saida de produtos">
+        <Title name="Saida de produto">
           <FaArrowCircleLeft size={25} />
         </Title>
 
@@ -608,8 +634,8 @@ export default function Entrada() {
             </div>
 
             <div className='grupo'>
-            {/* ESTE CAMPO ESTÁ INVISIVEL */}
-            <select id="codProdx" className="codProdx" value={produtosSelected} onChange={handleChangeProdutos} >
+              {/* ESTE CAMPO ESTÁ INVISIVEL */}
+              <select id="codProdx" className="codProdx" value={produtosSelected} onChange={handleChangeProdutos} >
                 <option value="">Código do produto</option>
                 {produtos.map((item, index) => {
                   return (
@@ -652,19 +678,20 @@ export default function Entrada() {
             </div>
 
             <div className='grupo'>
-              <label>Valor unitário</label>
+              <label>Custo médio</label>
               <input id="vlUnitario" className='vlUnitario' type="text" placeholder="0,00" value={valorUnitario} disabled={true} />
             </div>
 
             <div className='grupoBTN'>
               {Object.keys(edit).length > 0 ? (
-                <button className="btn-register" style={{ backgroundColor: '#6add39' }} type="submit">Atualizar movimento de saida</button>
+                <button className="btn-register" style={{ backgroundColor: '#6add39' }} type="submit">Atualizar</button>
               ) : Object.keys(delet).length > 0 ? (
-                <button className="btn-register" style={{ backgroundColor: '#f63535' }} type="submit">Excluir movimento de saida</button>
+                <button className="btn-register" style={{ backgroundColor: '#f63535' }} type="submit">Excluir</button>
               ) : (
-                <button className="btn-register" type="submit">Cadastrar movimento de saida</button>
+                <button className="btn-register" type="submit">Cadastrar</button>
               )}
               <button className="btn-register2" type="button" onClick={limpaTela}>Cancelar</button>
+              <button className="btn-register2" type="button" onClick={(e) => CriaPDF(estoques, anoMes)}>Imprimir</button>
             </div>
           </form>
         </div>
@@ -685,7 +712,7 @@ export default function Entrada() {
                   <th scope="col">Produto</th>
                   <th scope="col">Saida</th>
                   <th scope="col">Valor</th>
-                  <th scope="col">Unitário</th>
+                  <th scope="col">Custo Médio</th>
                   <th scope="col">Cadastro</th>
                   <th scope="col">Ação</th>
                 </tr>
@@ -699,7 +726,7 @@ export default function Entrada() {
                       <td data-label="Produto">{item.produto}</td>
                       <td data-label="Saida">{item.qtdeEstoque}</td>
                       <td data-label="Valor">{item.valorDaCompra}</td>
-                      <td data-label="Unitário">{item.valorUnitario}</td>
+                      <td data-label="Custo Médio">{item.valorUnitario}</td>
                       <td data-label="Cadastro">{item.user}</td>
                       <td data-label="Ação">
                         <button className="action" style={{ backgroundColor: '#6add39' }} onClick={() => editEstoque(item)}>

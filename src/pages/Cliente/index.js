@@ -1,14 +1,14 @@
 import { useState, useEffect, useContext } from 'react';
 import './cliente.css';
 import Title from '../../components/Title';
-import Cadastro from '../../components/Menus/Cadastro';
+import Principal from '../../components/Menus/Principal';
 import firebase from '../../services/firebaseConnection';
 import { FiEdit2, FiUser, FiMessageSquare } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import { RiDeleteBin3Line, RiUser2Fill } from 'react-icons/ri';
-
 import { format } from 'date-fns';
 import { AuthContext } from '../../contexts/auth';
+import CriaPDF from './report';
 import {
   doc,
   setDoc,
@@ -26,7 +26,7 @@ export default function Cliente() {
   const [cidade, setCidade] = useState('');
   const [tipo, setTipo] = useState('Cliente');
   const [codigo, setCodigo] = useState('');
-  const [cliente, setCliente] = useState([]);  //gera uma lista
+  const [cliente, setCliente] = useState([]);  
   const { user } = useContext(AuthContext);
   const [edit, setEdit] = useState({});
   const [delet, setDelet] = useState({});
@@ -97,7 +97,6 @@ export default function Cliente() {
   async function handleAdd(e) {
     e.preventDefault();
 
-    // Excluindo o cliente / fornecedor
     if (delet?.id) {
       await firebase.firestore().collection('cliente')
         .doc(delet.id)
@@ -113,7 +112,6 @@ export default function Cliente() {
       return;
     }
 
-    // Editando o cliente / fornecedor
     if (edit?.id) {
       if (!nomeFantasia) {
         toast.error('Os campos NOME FANTASIA da empresa tem que ser preenchido.')
@@ -139,7 +137,6 @@ export default function Cliente() {
       }
     }
 
-    //// Cadastrando o cliente / fornecedor
     if (!nomeFantasia) {
       toast.error('Os campos NOME FANTASIA da empresa tem que ser preenchido.')
     } else {
@@ -180,7 +177,7 @@ export default function Cliente() {
 
   return (
     <div>
-      <Cadastro />
+      <Principal />
       <div className="content">
         <h1>Mancini & Trindade</h1>
         <Title name="Cadastro de Clientes / Fornecedores">
@@ -239,15 +236,16 @@ export default function Cliente() {
 
             <div className='grupoBTN'>
               {Object.keys(edit).length > 0 ? (
-                <button className="btn-register" style={{ backgroundColor: '#6add39' }} type="submit">Atualizar <br/> cliente / fornecedor</button>
+                <button className="btn-register" style={{ backgroundColor: '#6add39' }} type="submit">Atualizar</button>
               ) : Object.keys(delet).length > 0 ? (
-                <button className="btn-register" style={{ backgroundColor: '#f63535' }} type="submit">Excluir <br/> cliente / fornecedor</button>
+                <button className="btn-register" style={{ backgroundColor: '#f63535' }} type="submit">Excluir</button>
               ) : (
-                <button className="btn-register" type="submit">Cadastrar <br/> cliente / fornecedor</button>
+                <button className="btn-register" type="submit">Cadastrar</button>
               )}
               <button className="btn-register2" type="button" onClick={limpaTela}>Cancelar</button>
+              <button className="btn-register2" type="button" onClick={(e) => CriaPDF(cliente)}>Imprimir</button>
             </div>
-
+  
           </form>
         </div>
       </div>

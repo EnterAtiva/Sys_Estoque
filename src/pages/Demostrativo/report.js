@@ -1,7 +1,7 @@
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
 
-function CriaPDF(demonstra, anoMes) {
+function CriaPDF(demonstra, anoMes, totEstoque, totValor) {
     pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
     const reportTitle = [
@@ -63,7 +63,31 @@ function CriaPDF(demonstra, anoMes) {
                 ]
             },
             layout: 'headerLineOnly' // 'lightHorizontalLines'
-        }
+        },
+        {
+            text: '_________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________',
+            alignment: 'center',
+            fontSize: 5
+        },
+        {
+            table: {
+                headerRows: 1,
+                widths: [160, 47, 45, 45, 45, 47, 17, 50],   // '*'
+                body: [
+                    [
+                        { text: 'Total', style: 'tableHeader', fontSize: 9, alignment: 'left' },
+                        { text: '', style: 'tableHeader', fontSize: 9, alignment: 'right' },
+                        { text: '', style: 'tableHeader', fontSize: 9, alignment: 'right' },
+                        { text: '', style: 'tableHeader', fontSize: 9, alignment: 'right' },
+                        { text: '', style: 'tableHeader', fontSize: 9, alignment: 'right' },
+                        { text: '', style: 'tableHeader', fontSize: 9, alignment: 'right' },
+                        { text: '', style: 'tableHeader', fontSize: 9, alignment: 'center' },
+                        { text: totValor, style: 'tableHeader', fontSize: 9, alignment: 'right' }
+                    ],
+                ]
+            },
+            layout: 'headerLineOnly' // 'lightHorizontalLines'
+        },
     ];
 
     function Rodape(currentPage, pageCount) {

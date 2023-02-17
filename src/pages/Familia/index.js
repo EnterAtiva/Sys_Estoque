@@ -2,13 +2,14 @@ import { useState, useEffect, useContext } from 'react';
 import firebase from '../../services/firebaseConnection';
 import './familia.css';
 import Title from '../../components/Title';
-import Cadastro from '../../components/Menus/Cadastro';
+//import Cadastro from '../../components/Menus/Cadastro';
 import Principal from '../../components/Menus/Principal';
 import { toast } from 'react-toastify';
 import { FiEdit2 } from 'react-icons/fi';
 import { RiDeleteBin3Line, RiTeamFill } from 'react-icons/ri';
 import { format } from 'date-fns';
 import { AuthContext } from '../../contexts/auth';
+import CriaPDF from './report';
 import {
   doc,
   setDoc,
@@ -93,7 +94,6 @@ export default function Familia() {
   async function handleAdd(e) {
     e.preventDefault();
 
-    // Excluindo a família
     if (delet?.id) {
       await firebase.firestore().collection('familia')
         .doc(delet.id)
@@ -109,7 +109,6 @@ export default function Familia() {
       return;
     }
 
-    //  Editando a familia
     if (edit?.id) {
       if (nome) {
         await firebase.firestore().collection('familia')
@@ -133,7 +132,6 @@ export default function Familia() {
       return;
     }
 
-    // Cadastrando a família
     if (nome) {
       await firebase.firestore().collection('familia')
         .add({
@@ -161,7 +159,7 @@ export default function Familia() {
       <Principal />
       <div className="content">
         <h1>Mancini & Trindade</h1>
-        <Title name="Cadastro de Famílias">
+        <Title name="Cadastro de Família dos Produtos">
           <RiTeamFill size={25} />
         </Title>
 
@@ -180,13 +178,14 @@ export default function Familia() {
 
             <div className='grupoBTN'>
               {Object.keys(edit).length > 0 ? (
-                <button className="btn-register" style={{ backgroundColor: '#6add39' }} type="submit">Atualizar família</button>
+                <button className="btn-register" style={{ backgroundColor: '#6add39' }} type="submit">Atualizar</button>
               ) : Object.keys(delet).length > 0 ? (
-                <button className="btn-register" style={{ backgroundColor: '#f63535' }} type="submit">Excluir família</button>
+                <button className="btn-register" style={{ backgroundColor: '#f63535' }} type="submit">Excluir</button>
               ) : (
-                <button className="btn-register" type="submit">Cadastrar família</button>
+                <button className="btn-register" type="submit">Cadastrar</button>
               )}
               <button className="btn-register2" type="button" onClick={limpaTela}>Cancelar</button>
+              <button className="btn-register2" type="button" onClick={(e) => CriaPDF(familia)}>Imprimir</button>
             </div>
           </form>
         </div>

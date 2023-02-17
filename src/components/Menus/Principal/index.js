@@ -1,104 +1,101 @@
-import { useContext }  from 'react';
+import { useContext } from 'react';
 import './principal.css';
 import { AuthContext } from '../../../contexts/auth';
-import avatar          from '../../../assets/avatar.png';
+import avatar from '../../../assets/avatar.png';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import { FiHome, FiUser, FiSettings } from "react-icons/fi";
-import { RiArrowLeftRightFill, RiArticleFill, RiUser2Fill, RiTeamFill} from "react-icons/ri";
-import { FaBox, FaArrowCircleRight, FaArrowCircleLeft, FaFileSignature, FaRegListAlt, FaClipboard } from 'react-icons/fa'; 
+import { RiArrowLeftRightFill, RiArticleFill, RiUser2Fill, RiTeamFill, RiArrowGoBackFill } from "react-icons/ri";
+import { FaBox, FaArrowCircleRight, FaArrowCircleLeft, FaFileSignature, FaRegListAlt, FaClipboard, FaDoorClosed, FaFileAlt } from 'react-icons/fa';
 
 
-export default function Principal(){
-  const { user } = useContext(AuthContext);
-  const tela0 = "principal";
-  const tela1 = "cadastro";
-  const tela2 = "movimento";
+export default function Principal() {
+  //const { user } = useContext(AuthContext);
+  const { user, signOut, setUser, storageUser } = useContext(AuthContext);
+  //const tela0 = "principal";
+  //const tela1 = "cadastro";
+  //const tela2 = "movimento";
 
-  return(
+  return (
     <div className="sidebar">
       <div>
-        <img src={user.avatarUrl === null ? avatar : user.avatarUrl } alt="Foto avatar" />
+        <img src={user.avatarUrl === null ? avatar : user.avatarUrl} alt="Foto avatar" />
       </div>
 
       <a className="titulo">
-      <RiArticleFill color="#FFF" size={17} />
-      Cadastro
+        <RiArticleFill color="#FFF" size={17} />
+        Cadastro
       </a>
 
       <Link to="/familia">
-        <RiTeamFill color="#FFF" size={17} />
+        <RiTeamFill color="#FFF" size={15} />
         Família do produto
       </Link>
 
       <Link to="/produto">
-        <FaBox color="#FFF" size={17} />
+        <FaBox color="#FFF" size={15} />
         Produto
-      </Link>    
+      </Link>
 
       <Link to="/cliente">
-        <RiUser2Fill color="#FFF" size={17} />
+        <RiUser2Fill color="#FFF" size={15} />
         Cliente/Fornecedor
-      </Link>    
+      </Link>
 
       <a className="titulo">
-      <RiArrowLeftRightFill color="#FFF" size={17} />
-      Estoque
+        <RiArrowLeftRightFill color="#FFF" size={17} />
+        Estoque
       </a>
 
       <Link to="/entrada">
-        <FaArrowCircleRight color="#FFF" size={17} />
+        <FaArrowCircleRight color="#FFF" size={15} />
         Entrada de produtos
       </Link>
 
       <Link to="/saida">
-        <FaArrowCircleLeft color="#FFF" size={17} />
+        <FaArrowCircleLeft color="#FFF" size={15} />
         Saída de produtos
-      </Link>    
+      </Link>
+
+      <Link to="/estoqueLista">
+        <FaFileAlt color="#FFF" size={15} />
+        Movimentação
+      </Link>
 
       <a className="titulo">
-      <FaClipboard color="#FFF" size={17} />
-      Inventario
+        <FaClipboard color="#FFF" size={17} />
+        Inventario
       </a>
 
       <Link to="/inventario">
-        <FaFileSignature color="#FFF" size={17} />
+        <FaFileSignature color="#FFF" size={15} />
         Lançamentos
-      </Link>    
+      </Link>
 
       <Link to="/demostrativo">
-        <FaRegListAlt color="#FFF" size={17} />
+        <FaRegListAlt color="#FFF" size={15} />
         Demonstrativo
-      </Link>    
+      </Link>
 
       <a className="titulo">
-      <FiSettings color="#FFF" size={17} />
-      Configurações
+        <FiSettings color="#FFF" size={17} />
+        Configurações
       </a>
 
       <Link to="/profile">
-      <FiUser color="#FFF" size={17} />
+        <FiUser color="#FFF" size={15} />
         Usuário
-      </Link>           
+      </Link>
 
+      <Link className='voltar' to="/menubase">
+        <RiArrowGoBackFill color="#FFF" size={17} />
+        Voltar
+      </Link>
 
+      <Link className='voltar' onClick={() => signOut()} >
+        <FaDoorClosed color="#FFF" size={17} />
+        Fechar
+      </Link>
 
-
-      {/*
-      <Link to={`/menubase/${tela1}` }> 
-        <RiArticleFill color="#FFF" size={24} />
-        **Cadastro**
-      </Link>    
-
-      <Link to={`/menubase/${tela2}` }>
-        <RiArrowLeftRightFill color="#FFF" size={24} />
-        **Movimentação**
-      </Link>    
-
-      <Link to="/#">
-        <FiUser color="#FFF" size={24} />
-        Estoques
-      </Link>    
-    */}     
-    </div>
+    </div >
   )
 }

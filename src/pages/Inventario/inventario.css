@@ -65,10 +65,30 @@
   margin-bottom: 0px;
 }
 
+.containerINVEN .proTipo {
+  /* para retirar a seta do select */ 
+  appearance: none;
+  width: 50px;
+  text-align: center;
+  margin-bottom: 0px;
+  background-color: #f5f2f2;
+  color: #121212;
+}
+
+.containerINVEN .txConv {
+  /* para retirar a seta do select */ 
+  appearance: none;
+  width: 120px;
+  text-align: right;
+  margin-bottom: 0px;
+  background-color: #f5f2f2;
+  color: #121212;
+}
+
 .containerINVEN .codProdX,
-.containerINVEN .txConv,
-.containerINVEN .tpOper,
-.containerINVEN .proTipo {  
+/*.containerINVEN .txConv,*/
+/*.containerINVEN .proTipo,*/
+.containerINVEN .tpOper {
   display: none;
   initial-value: hidden;
 }
@@ -77,14 +97,20 @@
   width: 120px;
   text-align: center;
   margin-bottom: 0px;
+  /*font-size: 1.3em;*/
+  font-weight: bold;
 }
-
 .containerINVEN .qtEstAnt,
-.containerINVEN .qtInvent,
 .containerINVEN .qtEstAtu,
+.containerINVEN .qtCompra {
+  width: 120px;
+  text-align: right;
+  margin-bottom: 0px;
+}
+.containerINVEN .qtInvent,
+.containerINVEN .vlCompra,
 .containerINVEN .ajuEstoque, 
 .containerINVEN .vlEstAnt, 
-.containerINVEN .vlCompra, 
 .containerINVEN .vlEstAtu{
   max-width: 150px;
   text-align: right;
@@ -100,7 +126,7 @@
 
 .containerINVEN .btn-register{
   padding:  5px 5px;
-  height: 45px;
+  height: 35px;
   border:0;
   border-radius: 10px;
   background-color:rgb(185, 183, 183);
@@ -111,7 +137,7 @@
 
 .containerINVEN .btn-register2{
   padding:  5px 5px;
-  height: 45px;
+  height: 35px;
   border:0;
   border-radius: 10px;
   background-color: rgb(185, 183, 183);
@@ -123,11 +149,13 @@
 
 .containerINVEN .btn-register3{
   padding:  5px 5px;
-  height: 45px;
+  height: 35px;
   border:0;
   border-radius: 10px;
-  background-color: rgb(235, 86, 86);
-  color: #FFF;
+  /*background-color: rgb(235, 86, 86);*/
+  background-color: rgb(185, 183, 183);
+  /*color: #FFF;*/
+  color: #181c2e;
   font-size: 1.3em;
   margin-left: 10px;
   width: 200px;
@@ -258,14 +286,14 @@
 }
 
 .thead_Inventario th:nth-child(3) {
-  width: 10%;
+  width: 9%;
 }
 .tbody_Inventario td:nth-child(3) {
   text-align: right;
 }
 
 .thead_Inventario th:nth-child(4) {
-  width: 10%;
+  width: 8%;
 }
 .tbody_Inventario td:nth-child(4) {
   text-align: right;
@@ -279,47 +307,64 @@
 }
 
 .thead_Inventario th:nth-child(6) {
-  width: 7%;
+  width: 8%;
 }
 .tbody_Inventario td:nth-child(6) {
-  text-align: left;
+  text-align: right;
 }
 
 .thead_Inventario th:nth-child(7) {
-  width: 10%;
+  width: 5%;
 }
 .tbody_Inventario td:nth-child(7) {
-  text-align: right;
+  text-align: left;
 }
 
 .thead_Inventario th:nth-child(8) {
-  width: 5%;
+  width: 9%;
 }
 .tbody_Inventario td:nth-child(8) {
-  text-align: center;
+  text-align: right;
 }
 
 .thead_Inventario th:nth-child(9) {
-  width: 10%;
+  width: 5%;
 }
 .tbody_Inventario td:nth-child(9) {
-  text-align: right;
+  text-align: center;
 }
 
 .thead_Inventario th:nth-child(10) {
   width: 7%;
 }
 .tbody_Inventario td:nth-child(10) {
-  text-align: left;
+  text-align: right;
 }
 
 .thead_Inventario th:nth-child(11) {
-  width: 5%;
+  width: 7%;
 }
 .tbody_Inventario td:nth-child(11) {
+  text-align: right;
+}
+
+.thead_Inventario th:nth-child(12) {
+  width: 5%;
+}
+.tbody_Inventario td:nth-child(12) {
+  text-align: left;
+}
+
+.thead_Inventario th:nth-child(13) {
+  width: 5%;
+}
+.tbody_Inventario td:nth-child(13) {
   text-align: center;
 }
 
+.table_Inventario tr.total{
+  background-color: rgb(182, 180, 180);
+}
 
 
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import firebase from '../../services/firebaseConnection';
 import { useHistory, useParams } from 'react-router-dom';
-import Movimento from '../../components/Menus/Movimento';
+import Principal from '../../components/Menus/Principal';
 import Title from '../../components/Title';
 import { AuthContext } from '../../contexts/auth';
 import { toast } from 'react-toastify';
@@ -9,7 +9,7 @@ import './entrada.css';
 import { FiEdit2 } from 'react-icons/fi';
 import { RiDeleteBin3Line } from 'react-icons/ri';
 import { FaBox, FaArrowCircleRight, FaRegFilePdf } from 'react-icons/fa';
-import { format, set } from 'date-fns';  
+import { format, set } from 'date-fns';
 import CriaPDF from './report';
 import {
   doc,
@@ -30,11 +30,9 @@ import {
 export default function Entrada() {
   const [loadFornecedores, setLoadFornecedores] = useState(true);
   const [fornecedores, setFornecedores] = useState([]);
-  //const [fornecedoresSelected, setFornecedoresSelected] = useState(0);  
   const [fornecedoresSelected, setFornecedoresSelected] = useState();
   const [loadProdutos, setLoadProdutos] = useState(true);
   const [produtos, setProdutos] = useState([]);
-  //const [produtosSelected, setProdutosSelected] = useState(0);  
   const [produtosSelected, setProdutosSelected] = useState();
   const [codigo, setCodigo] = useState(1);
   const [ano, setAno] = useState('');
@@ -110,7 +108,8 @@ export default function Entrada() {
               codigo: doc.data().codigo,
               nome: doc.data().nome,
               conversao: doc.data().conversao,
-              operador: doc.data().operador
+              operador: doc.data().operador,
+              unid: doc.data().tipo
             })
           })
 
@@ -172,13 +171,15 @@ export default function Entrada() {
 
     if (vlAno !== 0 && vlMes !== 0) {
       const unsub = onSnapshot(firebase.firestore().collection("estoque")
-        .orderBy('produto')
         .orderBy('fornecedor', 'asc')
+        .orderBy('produto')
         .where("ano", "==", vlAno)
         .where("mes", "==", vlMes)
-        .where("tipo", "==", "Entrada"),
+        .where("tipo", "==", "Entrada")
+        .where("fornecedor", "!=", "INVENTARIO"),
         (snapshot) => {
           let listaEstoques = [];
+
           snapshot.forEach((doc) => {
             listaEstoques.push({
               id: doc.id,
@@ -213,26 +214,16 @@ export default function Entrada() {
     }
   }
 
-  //Chamado quando troca o FORNECEDOR
   function handleChangeFornecedores(e) {
     setFornecedoresSelected(e.target.value);
   }
 
-  //Chamado quando troca o PRODUTO    
   async function handleChangeProdutos(e) {
     await setProdutosSelected(e.target.value);
     setQtdeEstAnterior('0,000');
     setValorEstAnterior('0,00');
 
     buscaEstoqueAnterior()
-    /*
-    let compra = document.getElementById("qtCompra");
-    let vlCompra = compra.value;
-    if (vlCompra.length > 0) {
-      console.log('passei aqui ****');
-      calculaEstoque()
-    }
-    */
   }
 
   function buscaEstoqueAnterior() {
@@ -271,11 +262,35 @@ export default function Entrada() {
     }
   }
 
-  async function formataCompra(e) {  //aqui
+  async function formataCompra(e) {  
     await setQtdeCompra(decimal3(e.target.value));
     //await setQtdeCompra(e.target.value.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }));
     calculaEstoque()
   }
+
+  async function formataQtdeConv(e) {  
+    await setQtdeEstoque(decimal3(e.target.value));
+    calculaEstQtConvertida(e.target.value)
+  }
+
+  
+  function calculaEstQtConvertida(qtdeConver) {
+    let varQtdeConver = parseFloat(valorUS(qtdeConver));
+
+    let busca = document.getElementById("qtEstAnt");   //Input
+    let qtEst = busca.value;
+    let qtEstAnt = parseFloat(valorUS(qtEst));
+
+    let qtEstAtu = (qtEstAnt + varQtdeConver);
+    setQtdeEstAtual(qtEstAtu.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }));
+
+    let temCompra = document.getElementById("vlCompra");
+    let temVlCompra = temCompra.value;
+    if (temVlCompra.length > 0) {
+      calculaTotalCompra();
+    };
+  }
+
 
   function calculaEstoque() {
     let busca = 0;
@@ -452,7 +467,6 @@ export default function Entrada() {
   async function handleRegister(e) {
     e.preventDefault();
 
-    // Excluindo o movimento de entrada
     if (delet?.id) {
       await firebase.firestore().collection('estoque')
         .doc(delet.id)
@@ -468,7 +482,6 @@ export default function Entrada() {
       return;
     }
 
-    //  Editando o movimento de entrada   
     if (edit?.id) {
       if (ano == 0 && mes == 0) {
         toast.error('Os campos ANO e MÊS tem que ser preenchidos.')
@@ -494,9 +507,9 @@ export default function Entrada() {
             produtoCod: produtos[produtosSelected].codigo,
             qtdeCompra: qtdeCompra,
             conversao: conversao,
+            qtdeFardo: '0,0',
             qtdeEstoque: qtdeEstoque,
             valorDaCompra: valorDaCompra,
-            //valorIpi: valorIpi,
             valorIpi: novoIpi,
             valorUnitario: valorUnitario,
             numNf: numNf,
@@ -506,7 +519,8 @@ export default function Entrada() {
             valorEstAtual: valorEstAtual,
             periodo: parseInt(ano.concat(mes)),
             cadastro: new Date(),
-            user: user.nome
+            user: user.nome,
+            unid: produtos[produtosSelected].unid
           })
           .then(() => {
             toast.success('Movimento de entrada editado com sucesso!');
@@ -520,7 +534,6 @@ export default function Entrada() {
       return;
     }
 
-    //  Cadastrar o movimento de entrada
     if (ano == 0 && mes == 0) {
       toast.error('Os campos ANO e MÊS tem que ser preenchidos.')
     } else if (fornecedoresSelected == undefined || fornecedoresSelected == null) {
@@ -546,6 +559,7 @@ export default function Entrada() {
           produtoCod: produtos[produtosSelected].codigo,
           qtdeCompra: qtdeCompra,
           conversao: conversao,
+          qtdeFardo: '0,0',
           qtdeEstoque: qtdeEstoque,
           valorDaCompra: valorDaCompra,
           //valorIpi: valorIpi,
@@ -558,7 +572,8 @@ export default function Entrada() {
           valorEstAtual: valorEstAtual,
           periodo: parseInt(ano.concat(mes)),
           cadastro: new Date(),
-          user: user.nome
+          user: user.nome,
+          unid: produtos[produtosSelected].unid
         })
         .then(() => {
           toast.success('Movimento de entrada criado com sucesso!');
@@ -603,7 +618,7 @@ export default function Entrada() {
 
   return (
     <div>
-      <Movimento />
+      <Principal />
       <div className="content">
         <h1>Mancini & Trindade</h1>
         <Title name="Entrada de produtos">
@@ -672,16 +687,16 @@ export default function Entrada() {
             </div>
 
             {/* ESTE CAMPO ESTÁ INVISIVEL */}
-              <select id="codProdx" className="codProdx" value={produtosSelected} onChange={handleChangeProdutos} disabled={true} >
-                <option value=""></option>
-                {produtos.map((item, index) => {
-                  return (
-                    <option key={item.id} value={index} >
-                      {item.codigo}
-                    </option>
-                  )
-                })}
-              </select>
+            <select id="codProdx" className="codProdx" value={produtosSelected} onChange={handleChangeProdutos} disabled={true} >
+              <option value=""></option>
+              {produtos.map((item, index) => {
+                return (
+                  <option key={item.id} value={index} >
+                    {item.codigo}
+                  </option>
+                )
+              })}
+            </select>
 
             <div className='grupo'>
               <label>Produto</label>
@@ -702,7 +717,12 @@ export default function Entrada() {
             </div>
 
             <div className='grupo'>
-              <label>Valor de conversão</label>
+              <label>Quantidade comprada</label>
+              <input type="text" id="qtCompra" className='qtCompra' placeholder="" value={qtdeCompra} onChange={formataCompra} />
+            </div>
+
+            <div className='grupo'>
+              <label>Taxa de conversão</label>
               <select id="txConv" className="txConv" value={produtosSelected} onChange={handleChangeProdutos} disabled={true} >
                 <option value=""></option>
                 {produtos.map((item, index) => {
@@ -713,6 +733,11 @@ export default function Entrada() {
                   )
                 })}
               </select>
+            </div>
+
+            <div className='grupo'>
+              <label>Quantidade convertida</label>
+              <input type="text" id="qtEstoque" className='qtEstoque' placeholder="" value={qtdeEstoque} onChange={formataQtdeConv} />
             </div>
 
             {/* ESTE CAMPO ESTÁ INVISIVEL */}
@@ -730,17 +755,6 @@ export default function Entrada() {
             <div className='grupo'>
               <label>Estoque anterior</label>
               <input type="text" id="qtEstAnt" className='qtEstAnt' placeholder="" value={qtdeEstAnterior} disabled={true} />
-            </div>
-
-            <div className='grupo'>
-              <label>Quantidade comprada</label>
-              <input type="text" id="qtCompra" className='qtCompra' placeholder="" value={qtdeCompra} onChange={formataCompra} />
-            </div>
-
-
-            <div className='grupo'>
-              <label>Quantidade convertida</label>
-              <input type="text" id="qtEstoque" className='qtEstoque' placeholder="" value={qtdeEstoque} disabled={true} />
             </div>
 
             <div className='grupo'>
@@ -769,17 +783,17 @@ export default function Entrada() {
             </div>
 
             <div className='grupo'>
-              <label>Valor unitário</label>
+              <label>Custo médio</label>
               <input type="text" id="vlUnitario" className='vlUnitario' placeholder="" value={valorUnitario} disabled={true} />
             </div>
 
             <div className='grupoBTN'>
               {Object.keys(edit).length > 0 ? (
-                <button className="btn-register" style={{ backgroundColor: '#6add39' }} type="submit">Atualizar movimento de entrada</button>
+                <button className="btn-register" style={{ backgroundColor: '#6add39' }} type="submit">Atualizar</button>
               ) : Object.keys(delet).length > 0 ? (
-                <button className="btn-register" style={{ backgroundColor: '#f63535' }} type="submit">Excluir movimento de entrada</button>
+                <button className="btn-register" style={{ backgroundColor: '#f63535' }} type="submit">Excluir</button>
               ) : (
-                <button className="btn-register" type="submit">Cadastrar movimento de entrada</button>
+                <button className="btn-register" type="submit">Cadastrar</button>
               )}
               <button className="btn-register2" type="button" onClick={limpaTela}>Cancelar</button>
               <button className="btn-register2" type="button" onClick={(e) => CriaPDF(estoques, anoMes)}>Imprimir</button>
@@ -807,7 +821,7 @@ export default function Entrada() {
                   <th scope="col">Estoque</th>
                   <th scope="col">Valor</th>
                   <th scope="col">IPI</th>
-                  <th scope="col">Unitário</th>
+                  <th scope="col">Custo Médio</th>
                   <th scope="col">Ação</th>
                 </tr>
               </thead>
@@ -823,7 +837,7 @@ export default function Entrada() {
                       <td data-label="Estoque">{item.qtdeEstoque}</td>
                       <td data-label="Valor">{item.valorDaCompra}</td>
                       <td data-label="Ipi">{item.valorIpi}</td>
-                      <td data-label="Unitário">{item.valorUnitario}</td>
+                      <td data-label="Custo Médio">{item.valorUnitario}</td>
                       <td data-label="Ação">
                         <button className="action" style={{ backgroundColor: '#6add39' }} onClick={() => editEstoque(item)}>
                           <FiEdit2 color="#FFF" size={15} />

@@ -1,7 +1,7 @@
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
 
-function CriaPDF(estoques, anoMes) {
+function CriaPDF(produtos) {
     pdfMake.vfs = pdfFonts.pdfMake.vfs;
  
     const reportTitle = [
@@ -12,30 +12,24 @@ function CriaPDF(estoques, anoMes) {
             margin: [10, 5, 0, 0]    // left, top, right, bottom
         },
         {
-            text: 'Entrada de Produtos Mensal',
+            text: 'Cadastro dos Produtos',
             style: 'subheader',
             fontSize: 14,
             alignment: 'center',
             margin: [10, 5, 0, 0]
         },
-        {
-            text: 'Período: ' + anoMes,
-            fontSize: 11,
-            alignment: 'center',
-            margin: [10, 5, 0, 5]
-        },
     ];
 
-    const dados = estoques.map((estoque) => {
+    const dados = produtos.map((produto) => {
         return [
-            { text: estoque.fornecedor, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'left' },
-            { text: estoque.produto, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'left' },
-            { text: estoque.qtdeCompra, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' },
-            { text: estoque.conversao, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' },
-            { text: estoque.qtdeEstoque, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' },
-            { text: estoque.valorDaCompra, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' },
-            { text: estoque.valorIpi, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' },
-            { text: estoque.qtdeEstAtual, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' }
+            { text: produto.codigo, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'center' },
+            { text: produto.nome, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'left' },
+            { text: produto.familia, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'left' },
+            { text: produto.tipo, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'center' },
+            { text: produto.conversao, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' },
+            { text: produto.operador, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'left' },
+            { text: produto.user, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'left' },
+            { text: produto.cadastroFormated, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'center' }
         ]
     });
 
@@ -43,17 +37,17 @@ function CriaPDF(estoques, anoMes) {
         {
             table: {
                 headerRows: 1,
-                widths: [77, 137, 45, 45, 45, 45, 35, 35],   // '*'
+                widths: [20, 200, 50, 15, 45, 40, 50, 45],   // '*'
                 body: [
                     [
-                        { text: 'Fornecedor', style: 'tableHeader', fontSize: 9, alignment: 'left' },
+                        { text: 'Cód.', style: 'tableHeader', fontSize: 9, alignment: 'rigth' },
                         { text: 'Produto', style: 'tableHeader', fontSize: 9, alignment: 'left' },
-                        { text: 'Compra', style: 'tableHeader', fontSize: 9, alignment: 'right' },
-                        { text: 'Conversão', style: 'tableHeader', fontSize: 9, alignment: 'right' },
-                        { text: 'Entrada', style: 'tableHeader', fontSize: 9, alignment: 'right' },
-                        { text: 'Valor', style: 'tableHeader', fontSize: 9, alignment: 'right' },
-                        { text: 'IPI', style: 'tableHeader', fontSize: 9, alignment: 'right' },
-                        { text: 'Estoque', style: 'tableHeader', fontSize: 9, alignment: 'right' }
+                        { text: 'Família', style: 'tableHeader', fontSize: 9, alignment: 'left' },
+                        { text: 'Und', style: 'tableHeader', fontSize: 8, alignment: 'center' },
+                        { text: 'Fator', style: 'tableHeader', fontSize: 9, alignment: 'right' },
+                        { text: 'Operador', style: 'tableHeader', fontSize: 9, alignment: 'left' },
+                        { text: 'Cadastrador', style: 'tableHeader', fontSize: 9, alignment: 'left' },
+                        { text: 'Data', style: 'tableHeader', fontSize: 9, alignment: 'center' }
                     ],
                     ...dados
                 ]
@@ -86,7 +80,7 @@ function CriaPDF(estoques, anoMes) {
 
     const docDefinitios = {
         pageSize: 'A4',
-        pageMargins: [10, 65, 15, 40],
+        pageMargins: [10, 50, 15, 40],
 
         header: [reportTitle],
         content: [details],

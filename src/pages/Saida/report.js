@@ -1,6 +1,6 @@
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
-
+ 
 function CriaPDF(estoques, anoMes) {
     pdfMake.vfs = pdfFonts.pdfMake.vfs;
  
@@ -12,7 +12,7 @@ function CriaPDF(estoques, anoMes) {
             margin: [10, 5, 0, 0]    // left, top, right, bottom
         },
         {
-            text: 'Entrada de Produtos Mensal',
+            text: 'Saída de Produtos Mensal',
             style: 'subheader',
             fontSize: 14,
             alignment: 'center',
@@ -30,11 +30,8 @@ function CriaPDF(estoques, anoMes) {
         return [
             { text: estoque.fornecedor, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'left' },
             { text: estoque.produto, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'left' },
-            { text: estoque.qtdeCompra, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' },
-            { text: estoque.conversao, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' },
             { text: estoque.qtdeEstoque, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' },
             { text: estoque.valorDaCompra, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' },
-            { text: estoque.valorIpi, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' },
             { text: estoque.qtdeEstAtual, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' }
         ]
     });
@@ -43,16 +40,13 @@ function CriaPDF(estoques, anoMes) {
         {
             table: {
                 headerRows: 1,
-                widths: [77, 137, 45, 45, 45, 45, 35, 35],   // '*'
+                widths: [80, 200, 45, 45, 45],   // '*'
                 body: [
                     [
-                        { text: 'Fornecedor', style: 'tableHeader', fontSize: 9, alignment: 'left' },
+                        { text: 'Cliente', style: 'tableHeader', fontSize: 9, alignment: 'left' },
                         { text: 'Produto', style: 'tableHeader', fontSize: 9, alignment: 'left' },
-                        { text: 'Compra', style: 'tableHeader', fontSize: 9, alignment: 'right' },
-                        { text: 'Conversão', style: 'tableHeader', fontSize: 9, alignment: 'right' },
-                        { text: 'Entrada', style: 'tableHeader', fontSize: 9, alignment: 'right' },
+                        { text: 'Saída', style: 'tableHeader', fontSize: 9, alignment: 'right' },
                         { text: 'Valor', style: 'tableHeader', fontSize: 9, alignment: 'right' },
-                        { text: 'IPI', style: 'tableHeader', fontSize: 9, alignment: 'right' },
                         { text: 'Estoque', style: 'tableHeader', fontSize: 9, alignment: 'right' }
                     ],
                     ...dados

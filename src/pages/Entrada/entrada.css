@@ -88,18 +88,26 @@
   width: 120px;
   text-align-last: right;
   margin-bottom: 0px;
+  background-color: #f5f2f2;
+  color: #121212;
 }
 
 .containerENTR .tpOper {
-  /* para deixar o campo invisível */
   display: none;
   visibility: hidden;
+}
+
+.containerENTR .qtEstAtu,
+.containerENTR .vlEstAtu {
+  width: 150px;
+  text-align-last: right;
+  margin-bottom: 0px;
+  font-weight: bold;
 }
 
 .containerENTR .qtEstAnt,
 .containerENTR .qtCompra,
 .containerENTR .qtEstoque,
-.containerENTR .qtEstAtu,
 .containerENTR .vlEstAnt,
 .containerENTR .vlCompra,
 .containerENTR .vlIpi,
@@ -119,7 +127,7 @@
 
 .containerENTR .btn-register{
   padding:  5px 5px;
-  height: 45px;
+  height: 35px;
   border:0;
   border-radius: 10px;
   background-color:rgb(185, 183, 183);
@@ -130,7 +138,7 @@
 
 .containerENTR .btn-register2{
   padding:  5px 5px;
-  height: 45px;
+  height: 35px;
   border:0;
   border-radius: 10px;
   background-color: rgb(185, 183, 183);
@@ -142,7 +150,7 @@
 
 .containerENTR .btn-register3{
   padding:  5px 5px;
-  height: 45px;
+  height: 35px;
   border:0;
   border-radius: 10px;
   background-color: rgb(235, 86, 86);

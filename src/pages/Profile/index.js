@@ -1,7 +1,7 @@
-
 import { useState, useContext } from 'react';
 import './profile.css';
-import Header from '../../components/Header';
+//import Header from '../../components/Header';
+import Principal from '../../components/Menus/Principal';
 import Title from '../../components/Title';
 import avatar from '../../assets/avatar.png';
 import { Link } from 'react-router-dom';
@@ -88,7 +88,8 @@ export default function Profile() {
 
   return (
     <div>
-      <Header />
+      {/*<Header />*/}
+      <Principal />
       <div className="content">
         <h1>Mancini & Trindade</h1>
         <Title name="Meu perfil">

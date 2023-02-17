@@ -75,7 +75,7 @@
 
 .containerCLIENTE .btn-register {
   padding:  5px 5px;
-  height: 45px;
+  height: 35px;
   border:0;
   border-radius: 10px;
   background-color:rgb(185, 183, 183);
@@ -86,7 +86,7 @@
 
 .containerCLIENTE .btn-register2 {
   padding:  5px 5px;
-  height: 45px;
+  height: 35px;
   border:0;
   border-radius: 10px;
   background-color: rgb(185, 183, 183);
@@ -221,7 +221,6 @@
 }
 
 .thead_Cliente th:nth-child(2) {
-  /*text-align: left;*/
   width: 35%;
 }
 .tbody_Cliente td:nth-child(2) {

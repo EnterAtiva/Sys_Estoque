@@ -1,22 +1,22 @@
-import { Switch } from 'react-router-dom';
-import Route      from './Route';
-import SignIn     from '../pages/SignIn';
-import SignUp     from '../pages/SignUp';
-import Dashboard  from '../pages/Dashboard';
-import Profile    from '../pages/Profile';
-import New        from '../pages/New';
-
-import Menubase   from '../pages/Menubase';
-import Familia    from '../pages/Familia';
-import Produto    from '../pages/Produto';
-import Cliente    from '../pages/Cliente';
-import Entrada    from '../pages/Entrada';
-import Saida      from '../pages/Saida';
-import Inventario from '../pages/Inventario';
+import { Switch }   from 'react-router-dom';
+import Route        from './Route';
+import SignIn       from '../pages/SignIn';
+import SignUp       from '../pages/SignUp';
+import Dashboard    from '../pages/Dashboard';
+import Profile      from '../pages/Profile';
+import New          from '../pages/New';
+import Menubase     from '../pages/Menubase';
+import Familia      from '../pages/Familia';
+import Produto      from '../pages/Produto';
+import Cliente      from '../pages/Cliente';
+import Entrada      from '../pages/Entrada';
+import Saida        from '../pages/Saida';
+import Inventario   from '../pages/Inventario';
 import Demostrativo from '../pages/Demostrativo';
+import EstoqueLista from '../pages/EstoqueLista';
 
-export default function Routes(){
-  return(
+export default function Routes() {
+  return (
     <Switch>
       <Route exact path="/" component={SignIn} />
       <Route exact path="/register" component={SignUp} />
@@ -37,6 +37,7 @@ export default function Routes(){
       <Route exact path="/saida" component={Saida} isPrivate />
       <Route exact path="/inventario" component={Inventario} isPrivate />
       <Route exact path="/demostrativo" component={Demostrativo} isPrivate />
+      <Route exact path="/estoqueLista" component={EstoqueLista} isPrivate />
     </Switch>
   )
 }

@@ -1,7 +1,8 @@
 import { useState, useEffect, useContext } from 'react';
 import firebase from '../../services/firebaseConnection';
 import { useHistory, useParams } from 'react-router-dom';
-import Cadastro from '../../components/Menus/Cadastro';
+//import Cadastro from '../../components/Menus/Cadastro';
+import Principal from '../../components/Menus/Principal';
 import Title from '../../components/Title';
 import { AuthContext } from '../../contexts/auth';
 import { toast } from 'react-toastify';
@@ -10,6 +11,7 @@ import { FiEdit2 } from 'react-icons/fi';
 import { RiDeleteBin3Line } from 'react-icons/ri';
 import { FaBox } from 'react-icons/fa';
 import { format, set } from 'date-fns';
+import CriaPDF from './report';
 import {
   doc,
   setDoc,
@@ -260,7 +262,6 @@ export default function Produto() {
     setConversao(decimal3(e.target.value));
   }
 
-  //Chamado quando troca a FAMÍLIA
   async function handleChangeFamilia(e) {
     await setFamiliaSelected(e.target.value);
 
@@ -297,6 +298,7 @@ export default function Produto() {
         })
     } else {
       const unsub = onSnapshot(firebase.firestore().collection("produto")
+        .orderBy('familia')
         .orderBy('nome', 'asc'),
         (snapshot) => {
           let listaProduto = [];
@@ -344,7 +346,7 @@ export default function Produto() {
 
   return (
     <div>
-      <Cadastro />
+      <Principal />
       <div className="content">
         <h1>Mancini & Trindade</h1>
         <Title name="Cadastro de Produtos">
@@ -410,13 +412,14 @@ export default function Produto() {
 
             <div className='grupoBTN'>
               {Object.keys(edit).length > 0 ? (
-                <button className="btn-register" style={{ backgroundColor: '#6add39' }} type="submit">Atualizar produto</button>
+                <button className="btn-register" style={{ backgroundColor: '#6add39' }} type="submit">Atualizar</button>
               ) : Object.keys(delet).length > 0 ? (
-                <button className="btn-register" style={{ backgroundColor: '#f63535' }} type="submit">Excluir produto</button>
+                <button className="btn-register" style={{ backgroundColor: '#f63535' }} type="submit">Excluir</button>
               ) : (
-                <button className="btn-register" type="submit">Cadastrar produto</button>
+                <button className="btn-register" type="submit">Cadastrar</button>
               )}
               <button className="btn-register2" type="button" onClick={limpaTela}>Cancelar</button>
+              <button className="btn-register2" type="button" onClick={(e) => CriaPDF(produtos)}>Imprimir</button>
             </div>
           </form>
         </div>

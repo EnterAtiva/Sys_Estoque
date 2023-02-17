@@ -1,7 +1,8 @@
 import { useState, useEffect, useContext } from 'react';
 import firebase from '../../services/firebaseConnection';
 import { useHistory, useParams } from 'react-router-dom';
-import Movimento from '../../components/Menus/Movimento';
+//import Movimento from '../../components/Menus/Movimento';
+import Principal from '../../components/Menus/Principal';
 import Title from '../../components/Title';
 import { AuthContext } from '../../contexts/auth';
 import { toast } from 'react-toastify';
@@ -59,6 +60,11 @@ export default function Inventario() {
   const [delet, setDelet] = useState({});
   const { user } = useContext(AuthContext);
 
+  const [fardo, setFardo] = useState('');
+  const [inventario, setInventario] = useState('');
+  const [ajuste, setAjuste] = useState('');
+  const [valor, setValor] = useState('');
+
   useEffect(() => {
     async function loadProdutos() {
       const unsub = onSnapshot(firebase.firestore().collection('produto')
@@ -107,7 +113,6 @@ export default function Inventario() {
   }
 
   function carregaListaInventario(ano, mes) {
-    //if (ano !== null && mes !== null) {
     if (ano && mes) {
       const unsub = onSnapshot(firebase.firestore().collection("estoque")
         .orderBy('produto')
@@ -117,8 +122,16 @@ export default function Inventario() {
         .where("fornecedor", "==", 'INVENTARIO'),
         (snapshot) => {
           let listaInventario = [];
+          let totFardo = 0;
+          let totInvent = 0;
+          let totAjuste = 0;
+          let totValor = 0;
 
           snapshot.forEach((doc) => {
+            totFardo = totFardo + parseFloat(valorUS(doc.data().qtdeFardo));
+            totInvent = totInvent + parseFloat(valorUS(doc.data().qtdeCompra));
+            totAjuste = totAjuste + parseFloat(valorUS(doc.data().qtdeEstoque));
+            totValor = totValor + parseFloat(valorUS(doc.data().valorEstAtual));
             listaInventario.push({
               id: doc.id,
               codigo: doc.data().codigo,
@@ -132,10 +145,12 @@ export default function Inventario() {
               produtoId: doc.data().produtoId,
               produtoCod: doc.data().produtoCod,
               qtdeEstAnterior: doc.data().qtdeEstAnterior,
+              qtdeFardo: doc.data().qtdeFardo,
               qtdeCompra: doc.data().qtdeCompra,
               qtdeEstoque: doc.data().qtdeEstoque,
               qtdeEstAtual: doc.data().qtdeEstAtual,
               valorEstAtual: doc.data().valorEstAtual,
+              valorUnitario: doc.data().valorUnitario,
               unid: doc.data().unid,
               cadastro: doc.data().cadastro,
               cadastroFormated: format(doc.data().cadastro.toDate(), 'dd/MM/yyyy'),
@@ -143,6 +158,10 @@ export default function Inventario() {
             })
           })
           setInventarios(listaInventario);
+          setFardo(totFardo.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 }));
+          setInventario(totInvent.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }));
+          setAjuste(totAjuste.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }));
+          setValor(totValor.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
         })
     }
   }
@@ -189,7 +208,7 @@ export default function Inventario() {
     buscaEstoqueAnterior(codPro, codLan);
   }
 
-  async function buscaEstoqueAnterior(codPro, codLan) {   // aqui
+  async function buscaEstoqueAnterior(codPro, codLan) {  
     let busca = 0;
     let xxQtdeInv = 0;
 
@@ -226,67 +245,81 @@ export default function Inventario() {
               setValorEstAnterior(doc.data().valorEstAtual);
               xxValorEstAnt = doc.data().valorEstAtual;
             }
-            calculaEstoque(xxQtdeInv, xxQtdeEstAnt, xxValorEstAnt);
+
+            //if (xxQtdeInv > 0) {
+              calculaEstoque(xxQtdeInv, xxQtdeEstAnt, xxValorEstAnt);
+            //}
           })
         })
     }
   }
 
-  async function formataValorMovimento(e) {  //gui
+  async function formataValorMovimento(e) {
     await setValorDaCompra(decimal2(e.target.value));
-    setValorEstAtual(decimal2(e.target.value));
+    let varVlEstAnt = 0;
+
+    let busca = document.getElementById("vlEstAnt");   //Input
+    let busVlEstAnt = parseFloat(valorUS(busca.value));
+    let busMovim = parseFloat(valorUS(e.target.value));
+    if (busVlEstAnt) {
+      varVlEstAnt = busVlEstAnt + busMovim;
+    } else {
+      varVlEstAnt = busMovim;
+    }
+    setValorEstAtual(varVlEstAnt.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 
     let qtEstAtual = 0;
-    let vlEst = parseFloat(valorUS(e.target.value));
-
     if (qtdeEstAtual) {
       qtEstAtual = parseFloat(valorUS(qtdeEstAtual));
     };
 
-    let vlUni = (vlEst / qtEstAtual);
+    let vlUni = (varVlEstAnt / qtEstAtual);
     setValorUnitario(vlUni.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
   }
 
-  function calculaEstoque(qtdeInv, qtdeEstAnte, valorEstAnte) { //aqui
-    let busca = 0;
-    let xxQtdeInv = '0,000';
 
-    busca = document.getElementById("qtInvent");   //Input
-    let xxQtde = busca.value;
-    if (xxQtde > 0 || xxQtde !== NaN) {
-      xxQtdeInv = parseFloat(valorUS(xxQtde));;
-    }
+  function calculaEstoque(qtdeInv, qtdeEstAnte, valorEstAnte) { //aqui
+    console.log('0 qtdeInv: ', qtdeInv);
+    console.log('0 qtdeEstAnte: ', qtdeEstAnte);
+    console.log('0 valorEstAnte: ', valorEstAnte);
 
     let qtdeInvConv = '0,000';
     let qtdeEstAnteConv = '0,000';
     let valorEstAnteConv = '0,00';
     let qtdeAjuste = 0;
 
-    if (qtdeInv !== "") {
+    //if (qtdeInv !== "0,000") {
+    if (qtdeInv) {
       qtdeInvConv = parseFloat(valorUS(qtdeInv));
+      //qtdeInvConv = qtdeInv;
     } else {
       qtdeInvConv = 0;
     };
 
-    if (qtdeEstAnte !== "") {
+    if (qtdeEstAnte !== "0,000") {
       qtdeEstAnteConv = parseFloat(valorUS(qtdeEstAnte));
     } else {
       qtdeEstAnteConv = 0;
     };
 
-    if (valorEstAnte !== "") {
+    if (valorEstAnte !== "0,00") {
       valorEstAnteConv = parseFloat(valorUS(valorEstAnte));
     } else {
       valorEstAnteConv = 0;
     };
 
+    console.log('1 qtdeInvConv: ', qtdeInvConv);
+    console.log('1 qtdeEstAnteConv: ', qtdeEstAnteConv);
+    console.log('1 valorEstAnteConv: ', valorEstAnteConv);
+    console.log(': ',);
+
+
     let qtInveConv = 0;
     let qtEstAnt = 0;
     let tipoMov = "";
 
-    setQtdeEstAtual(qtdeInv);
+    setQtdeEstAtual(qtdeInv.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }));
 
-    //console.log('qtdeInvConv: ', qtdeInvConv);
     //if (qtdeInvConv >= 0) {
     if (qtdeEstAnteConv >= qtdeInvConv) {
       setTipoMovimento('Saida');
@@ -302,44 +335,78 @@ export default function Inventario() {
       if (qtdeInvConv > 0) {
         qtdeAjuste = (qtdeInvConv - qtdeEstAnteConv);
         setAjusteEstoque(qtdeAjuste.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }));
+
+        console.log('xx qtdeInvConv: ', qtdeInvConv);
+        console.log('xx qtdeEstAnteConv: ', qtdeEstAnteConv);
+        console.log('xx qtdeAjuste: ', qtdeAjuste);
+        console.log(': ',);
+
       } else {
-        setAjusteEstoque(qtdeInvConv.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }));
+        qtdeAjuste = qtdeInvConv;
+        //setAjusteEstoque(qtdeInvConv.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }));
+        setAjusteEstoque(qtdeAjuste.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }));
       }
       setInvSaida('');
       setInvEntrada('SIM');
     }
     //}
 
-    if (valorEstAnteConv > 0) {
+    if (valorEstAnteConv > 0 && qtdeInvConv > 0) {
       let vlUni = (valorEstAnteConv / qtdeEstAnteConv);
       let vlInv = 0;
       let vlEstAtu = 0;
-      //console.log('tipoMov: ', tipoMov);
       if (tipoMov == "Saida") {
         vlInv = (vlUni * (qtdeEstAnteConv - qtdeInvConv));
         vlEstAtu = (valorEstAnteConv - vlInv);
       } else {
-        vlInv = (vlUni * (qtdeEstAnteConv + qtdeInvConv));
+        //vlInv = (vlUni * (qtdeEstAnteConv + qtdeInvConv));
+        vlInv = (vlUni * qtdeAjuste);
         vlEstAtu = (valorEstAnteConv + vlInv);
       }
 
       setValorDaCompra(vlInv.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
       setValorEstAtual(vlEstAtu.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
       setValorUnitario(vlUni.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-      /*
-      let vlEstAtu = 0;
-      if (vlInv > 0) {
-        vlEstAtu = (valorEstAnteConv - vlInv);
-      } else {
-        vlEstAtu = (valorEstAnteConv + vlInv);
-      }
-      setValorEstAtual(vlEstAtu.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-      */
     } else {
       setValorDaCompra('');
       setValorEstAtual('');
       setValorUnitario('');
     };
+  }
+
+  async function formataCompra(e) {
+    await setQtdeCompra(decimal1(e.target.value));
+    calculaConversao(e.target.value);
+  }
+
+  function calculaConversao(qtdFardo) {
+    let varQtFardo = 0;
+    let varTxConv = 0;
+    let varEntrada = 0;
+
+    let busca = document.getElementById("txConv");  // Select
+    let varTaxa = busca.options[busca.selectedIndex].text;
+
+    if (varTaxa) {
+      varTxConv = parseFloat(valorUS(varTaxa));
+    } else {
+      varTxConv = 0;
+    };
+
+    if (qtdFardo) {
+      varQtFardo = parseFloat(valorUS(qtdFardo));
+    } else {
+      varQtFardo = 0;
+    };
+
+    varEntrada = varTxConv * varQtFardo
+    setQtdeInventario(varEntrada.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }));
+    let varTeste = 0
+    varTeste = (varEntrada.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }));
+    console.log('varTeste: ', varTeste);
+
+    //calculaEstoque(qtdeInventario, qtdeEstAnterior, valorEstAnterior)
+    calculaEstoque(varTeste, qtdeEstAnterior, valorEstAnterior)
   }
 
   async function formataInventario(e) {
@@ -358,6 +425,7 @@ export default function Inventario() {
             setCodigo(doc.data().codigo);
             setTipoMovimento(doc.data().tipo);
             setQtdeInventario(doc.data().qtdeCompra);
+            setQtdeCompra(doc.data().qtdeFardo);
             setAjusteEstoque(doc.data().qtdeEstoque);
             setValorUnitario(doc.data().valorUnitario);
             setQtdeEstAnterior(doc.data().qtdeEstAnterior);
@@ -387,6 +455,7 @@ export default function Inventario() {
     setConversao('');
     setQtdeEstoque('');
     setValorUnitario('');
+    setQtdeCompra('');
     setValorDaCompra('');
     setQtdeEstAnterior('');
     setQtdeEstAtual('');
@@ -410,11 +479,11 @@ export default function Inventario() {
         .then(() => {
           toast.success('Movimento de inventario deletedo com sucesso!');
           limpaTela()
-          carregaListaInventario()
+          carregaListaInventario(ano, mes)
         })
         .catch((err) => {
           toast.error('Ops erro ao excluir, tente mais tarde.')
-          console.log(err);
+          console.log(err)
         })
       return;
     }
@@ -426,6 +495,11 @@ export default function Inventario() {
       } else if (produtosSelected == undefined || produtosSelected == null) {
         toast.error('O campo PRODUTO tem que ser preenchido.')
       } else {
+        let varFardo = "0,0";
+        if (qtdeCompra) {
+          varFardo = qtdeCompra;
+        };
+
         firebase.firestore().collection('estoque')
           .add({
             codigo: codigo,
@@ -439,7 +513,8 @@ export default function Inventario() {
             produtoId: produtos[produtosSelected].id,
             produtoCod: produtos[produtosSelected].codigo,
             qtdeCompra: qtdeInventario,    //aqui vai o valor da contagem no inventario
-            conversao: '0,000',
+            conversao: produtos[produtosSelected].conversao,
+            qtdeFardo: varFardo,
             qtdeEstoque: ajusteEstoque,   //aqui vai o ajuste do estoque, gerado pela contagem do inventario
             valorDaCompra: valorDaCompra,
             valorIpi: '0,00',
@@ -457,16 +532,26 @@ export default function Inventario() {
           .then(() => {
             toast.success('Movimento de saída de inventario criado com sucesso!');
             limpaTela();
-            carregaListaInventario();
+            carregaListaInventario(ano, mes);
           })
           .catch((err) => {
-            toast.error('Ops erro ao gravar o inventario, tente mais tarde.')
+            toast.error('Ops erro ao gravar o inventario, tente mais tarde.');
             console.log(err);
           })
       }
     } else {
       alert("O inventario não pode ser maior que o estoque atual.");
     }
+  }
+
+  function decimal1(v) {
+    v = v.replace(/\D/g, "") // permite digitar apenas numero
+    v = v.replace(/(\d{1})(\d{13})$/, "$1.$2") // coloca ponto antes dos ultimos digitos
+    v = v.replace(/(\d{1})(\d{10})$/, "$1.$2") // coloca ponto antes dos ultimos 10 digitos
+    v = v.replace(/(\d{1})(\d{7})$/, "$1.$2") // coloca ponto antes dos ultimos 7 digitos
+    v = v.replace(/(\d{1})(\d{4})$/, "$1.$2") // coloca ponto antes dos ultimos 4 digitos
+    v = v.replace(/(\d{1})(\d{1,1})$/, "$1,$2") // coloca virgula antes do ultimo digitos
+    return v;
   }
 
   function decimal2(v) {
@@ -497,7 +582,7 @@ export default function Inventario() {
 
   return (
     <div>
-      <Movimento />
+      <Principal />
       <div className="content">
         <h1>Mancini & Trindade</h1>
         <Title name="Inventario Mensal">
@@ -573,18 +658,6 @@ export default function Inventario() {
             </select>
 
             {/* ESTE CAMPO ESTÁ INVISIVEL */}
-            <select id="txConv" className="txConv" value={produtosSelected} onChange={handleChangeProdutos} >
-              <option value="">Valor para conversão.</option>
-              {produtos.map((item, index) => {
-                return (
-                  <option key={item.id} value={index} disabled={true} >
-                    {item.conversao}
-                  </option>
-                )
-              })}
-            </select>
-
-            {/* ESTE CAMPO ESTÁ INVISIVEL */}
             <select id="tpOper" className="tpOper" value={produtosSelected} onChange={handleChangeProdutos} >
               <option value="">Operador para conversão</option>
               {produtos.map((item, index) => {
@@ -596,26 +669,47 @@ export default function Inventario() {
               })}
             </select>
 
-            {/* ESTE CAMPO ESTÁ INVISIVEL */}
-            <select id="proTipo" className="proTipo" value={produtosSelected} onChange={handleChangeProdutos} >
-              <option value="">Unidade de estoque</option>
-              {produtos.map((item, index) => {
-                return (
-                  <option key={item.id} value={index} >
-                    {item.tipo}
-                  </option>
-                )
-              })}
-            </select>
-
             <div className='grupo'>
               <label>Estoque anterior</label>
               <input type="text" id="qtEstAnt" className='qtEstAnt' placeholder="0,000" value={qtdeEstAnterior} disabled={true} />
             </div>
 
             <div className='grupo'>
-              <label>Quantidade do inventario</label>
+              <label>em FARDOS</label>
+              <input type="text" id="qtCompra" className='qtCompra' placeholder="" value={qtdeCompra} onChange={formataCompra} />
+            </div>
+
+            <div className='grupo'>
+              <label>Taxa conversão</label>
+              <select id="txConv" className="txConv" value={produtosSelected} onChange={handleChangeProdutos} disabled={true} >
+                <option value=""></option>
+                {produtos.map((item, index) => {
+                  return (
+                    <option key={item.id} value={index} disabled={true} >
+                      {item.conversao}
+                    </option>
+                  )
+                })}
+              </select>
+            </div>
+
+            <div className='grupo'>
+              <label>outra UNIDADE</label>
               <input type="text" id="qtInvent" className="qtInvent" placeholder="" value={qtdeInventario} onChange={formataInventario} />
+            </div>
+
+            <div className='grupo'>
+              <label>Unidade</label>
+              <select id="proTipo" className="proTipo" value={produtosSelected} onChange={handleChangeProdutos} disabled={true} >
+                <option value=""></option>
+                {produtos.map((item, index) => {
+                  return (
+                    <option key={item.id} value={index} >
+                      {item.tipo}
+                    </option>
+                  )
+                })}
+              </select>
             </div>
 
             <div className='grupo'>
@@ -656,13 +750,12 @@ export default function Inventario() {
 
             <div className='grupoBTN'>
               {Object.keys(delet).length > 0 ? (
-                <button className="btn-register" style={{ backgroundColor: '#f63535' }} type="submit">Excluir movimento de inventario</button>
+                <button className="btn-register" style={{ backgroundColor: '#f63535' }} type="submit">Excluir</button>
               ) : (
-                <button className="btn-register" type="submit">Cadastrar movimento de inventario</button>
+                <button className="btn-register" type="submit">Cadastrar</button>
               )}
               <button className="btn-register2" type="button" onClick={limpaTela}>Cancelar</button>
-              <button className="btn-register3" type="button" onClick={(e) => CriaPDF(inventarios, anoMes)}>      
-                <FaRegFilePdf color="#FFF" size={20}/>  Gerar PDF</button>
+              <button className="btn-register3" type="button" onClick={(e) => CriaPDF(inventarios, anoMes, inventario, ajuste, valor)}>Imprimir</button>
             </div>
           </form>
         </div>
@@ -681,12 +774,14 @@ export default function Inventario() {
                   <th scope="col">Lanç.</th>
                   <th scope="col">Produto</th>
                   <th scope="col">Anterior</th>
+                  <th scope="col">Invent. Fardo</th>
                   <th scope="col">Inventario</th>
                   <th scope="col">Ajuste</th>
                   <th scope="col">Tipo</th>
                   <th scope="col">Atual</th>
                   <th scope="col">Unid.</th>
                   <th scope="col">Valor</th>
+                  <th scope="col">Custo Médio</th>
                   <th scope="col">Cadastro</th>
                   <th scope="col">Ação</th>
                 </tr>
@@ -698,12 +793,14 @@ export default function Inventario() {
                       <td data-label="Lanç.">{item.codigo}</td>
                       <td data-label="Produto">{item.produto}</td>
                       <td data-label="Anterior">{item.qtdeEstAnterior}</td>
+                      <td data-label="Invent. Fardo">{item.qtdeFardo}</td>
                       <td data-label="Inventario">{item.qtdeCompra}</td>
                       <td data-label="Ajuste">{item.qtdeEstoque}</td>
                       <td data-label="Tipo">{item.tipo}</td>
                       <td data-label="Atual">{item.qtdeEstAtual}</td>
                       <td data-label="Unid.">{item.unid}</td>
                       <td data-label="Valor">{item.valorEstAtual}</td>
+                      <td data-label="Custo Médio">{item.valorUnitario}</td>
                       <td data-label="Cadastro">{item.user}</td>
                       <td data-label="Ação">
                         <button className="action" style={{ backgroundColor: '#f63535' }} onClick={() => deleteInventario(item)}>
@@ -713,6 +810,23 @@ export default function Inventario() {
                     </tr>
                   )
                 })}
+
+                <tr className='total'>
+                  <td></td>
+                  <td>Total</td>
+                  <td></td>
+                  <td>{fardo}</td>
+                  <td>{inventario}</td>
+                  <td>{ajuste}</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>{valor}</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+
               </tbody>
             </table>
           </>

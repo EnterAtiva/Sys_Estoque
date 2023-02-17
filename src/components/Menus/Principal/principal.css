@@ -61,6 +61,11 @@
   color: #FFF;
 }
 
+.sidebar a.voltar {
+  padding-top: 15px;
+  padding-left: 9px;
+}
+
 .sidebar a:hover{
   background-color: #121212;
   color: #FFF;

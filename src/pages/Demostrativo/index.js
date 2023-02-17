@@ -1,14 +1,15 @@
 import { useState, useEffect, useContext } from 'react';
 import firebase from '../../services/firebaseConnection';
 import { useHistory, useParams } from 'react-router-dom';
-import Movimento from '../../components/Menus/Movimento';
+//import Movimento from '../../components/Menus/Movimento';
+import Principal from '../../components/Menus/Principal';
 import Title from '../../components/Title';
 import { AuthContext } from '../../contexts/auth';
 import { toast } from 'react-toastify';
 import './demostrativo.css';
 import { FiEdit2 } from 'react-icons/fi';
 import { RiDeleteBin3Line } from 'react-icons/ri';
-import { FaBox, FaRegFilePdf } from 'react-icons/fa';
+import { FaBox, FaRegFilePdf, FaRegListAlt } from 'react-icons/fa';
 import { format, set } from 'date-fns';
 import CriaPDF from './report';
 import {
@@ -67,6 +68,9 @@ export default function Entrada() {
   const [delet, setDelet] = useState({});
   const { user } = useContext(AuthContext);
 
+  const [totEstoque, setTotEstoque] = useState('');
+  const [totValor, setTotValor] = useState('');
+
   useEffect(() => {
     function loadProdutos() {
       const unsub = onSnapshot(firebase.firestore().collection("produto")
@@ -123,13 +127,16 @@ export default function Entrada() {
   async function handleChangeProdutos(e) {
     await setProdutosSelected(e.target.value);
 
-    let busca = document.getElementById("prod");  // Select
+    let busca = document.getElementById("prod");  
     setNomeProd(busca.options[busca.selectedIndex].text);
     Lista(ano, mes, busca.options[busca.selectedIndex].text);
   }
 
   function Lista(ano, mes, nomeProd) {
     let ListaPro = [];
+
+    let varTotEstoque = 0;
+    let varTotValor = 0;
 
     if (ano && mes && !nomeProd) {
       produtos.forEach((item) => {
@@ -141,7 +148,6 @@ export default function Entrada() {
         let qtdEstAtu = 0;
         let vlrEstAtu = 0;
         let unid = item.tipo;
-
         const unsub = onSnapshot(firebase.firestore().collection("estoque")
           .orderBy('codigo', 'asc')
           .where('produto', '==', item.nome)
@@ -179,6 +185,10 @@ export default function Entrada() {
               atual: (new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 3 }).format(qtdEstAtu)),
               valor: (new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(vlrEstAtu)),
             })
+            varTotEstoque = varTotEstoque + qtdEstAtu
+            varTotValor = varTotValor + vlrEstAtu
+            setTotEstoque(varTotEstoque.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }));
+            setTotValor(varTotValor.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
           })
       })
 
@@ -194,6 +204,9 @@ export default function Entrada() {
       let qtdEstAnt = 0;
       let qtdEstAtu = 0;
       let vlrEstAtu = 0;
+
+      let varTotEstoque = 0;
+      let varTotValor = 0;
 
       const unsub = onSnapshot(firebase.firestore().collection("estoque")
         .where('produto', '==', nomeProd)
@@ -235,10 +248,13 @@ export default function Entrada() {
             atual: (new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 3 }).format(qtdEstAtu)),
             valor: (new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(vlrEstAtu)),
           })
+          varTotEstoque = varTotEstoque + qtdEstAtu
+          varTotValor = varTotValor + vlrEstAtu
+          setTotEstoque(varTotEstoque.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }));
+          setTotValor(varTotValor.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
         })
     }
     setDemonstra(ListaPro);
-    console.log('ListaPro: ', ListaPro);
     setProdutosXxSelected('aaa');
   }
 
@@ -266,11 +282,11 @@ export default function Entrada() {
 
   return (
     <div>
-      <Movimento />
+      <Principal />
       <div className="content">
         <h1>Mancini & Trindade</h1>
         <Title name="Demonstrativo do Inventario Mensal">
-          <FaBox size={25} />
+          <FaRegListAlt size={25} />
         </Title>
 
         <div className="containerDEMONSTR">
@@ -337,10 +353,9 @@ export default function Entrada() {
             </select>
 
             <div className='grupoBTN'>
-              <button className="btn-register" type="button" onClick={limpaTela2}>Mostrar Demonstrativo</button>
+              <button className="btn-register" type="button" onClick={limpaTela2}>Gerar Demonstrativo</button>
               <button className="btn-register2" type="button" onClick={limpaTela}>Limpar</button>
-              <button className="btn-register3" type="button" onClick={(e) => CriaPDF(demonstra, anoMes)}>      
-                <FaRegFilePdf color="#FFF" size={20}/>  Gerar PDF</button>
+              <button className="btn-register3" type="button" onClick={(e) => CriaPDF(demonstra, anoMes, totEstoque, totValor)}>Imprimir</button>
             </div>
 
           </form>
@@ -378,12 +393,25 @@ export default function Entrada() {
                       <td data-label="Entrada">{item.entrada}</td>
                       <td data-label="Saída">{item.saida}</td>
                       <td data-label="Inventario">{item.inventario}</td>
-                      <td data-label="Atual">{item.atual}</td>
+                      <td data-label="no Mês">{item.atual}</td>
                       <td data-label="Unid">{item.unid}</td>
                       <td data-label="Valor">{item.valor}</td>
                     </tr>
                   )
                 })}
+
+                <tr className='total'>
+                  <td></td>
+                  <td>Total</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>{totValor}</td>
+                </tr>
+
               </tbody>
             </table>
           </>

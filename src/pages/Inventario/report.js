@@ -1,7 +1,7 @@
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
 
-function CriaPDF(inventarios, anoMes) {
+function CriaPDF(inventarios, anoMes, inventario, ajuste, valor) {
     pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
     const reportTitle = [
@@ -28,15 +28,15 @@ function CriaPDF(inventarios, anoMes) {
 
     const dados = inventarios.map((invent) => {
         return [
-            { text: invent.produto, fontSize: 9, margin: [0, 2, 0, 2] },
-            { text: invent.qtdeEstAnterior, fontSize: 9, margin: [0, 2, 0, 2], alignment: 'right' },
-            { text: invent.qtdeCompra, fontSize: 9, margin: [0, 2, 0, 2], alignment: 'right' },
-            { text: invent.qtdeEstoque, fontSize: 9, margin: [0, 2, 0, 2], alignment: 'right' },
-            { text: invent.tipo, fontSize: 9, margin: [0, 2, 0, 2], alignment: 'left' },
-            { text: invent.qtdeEstAtual, fontSize: 9, margin: [0, 2, 0, 2], alignment: 'right' },
-            { text: invent.unid, fontSize: 9, margin: [0, 2, 0, 2], alignment: 'right' },
-            { text: invent.valorEstAtual, fontSize: 9, margin: [0, 2, 0, 2], alignment: 'right' },
-            { text: invent.user, fontSize: 9, margin: [0, 2, 0, 2], alignment: 'left' }
+            { text: invent.produto, fontSize: 8, margin: [0, 2, 0, 2] },
+            { text: invent.qtdeEstAnterior, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' },
+            { text: invent.qtdeCompra, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' },
+            { text: invent.qtdeEstoque, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' },
+            { text: invent.tipo, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'left' },
+            { text: invent.qtdeEstAtual, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' },
+            { text: invent.unid, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' },
+            { text: invent.valorEstAtual, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'right' },
+            { text: invent.user, fontSize: 8, margin: [0, 2, 0, 2], alignment: 'left' }
         ]
     });
 
@@ -44,7 +44,7 @@ function CriaPDF(inventarios, anoMes) {
         {
             table: {
                 headerRows: 1,
-                widths: [120, 43, 43, 43, 35, 43, 20, 50, 43],   // '*'
+                widths: [125, 43, 43, 43, 30, 43, 20, 50, 43],   // '*'
                 body: [
                     [
                         { text: 'Produto', style: 'tableHeader', fontSize: 9, alignment: 'left' },
@@ -61,7 +61,32 @@ function CriaPDF(inventarios, anoMes) {
                 ]
             },
             layout: 'headerLineOnly' // 'lightHorizontalLines'
-        }
+        },
+        {
+            text: '_________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________',
+            alignment: 'center',
+            fontSize: 5
+        },
+        {
+            table: {
+                headerRows: 1,
+                widths: [125, 43, 43, 43, 30, 43, 20, 50, 43],   // '*'
+                body: [
+                    [
+                        { text: 'Total', style: 'tableHeader', fontSize: 8, alignment: 'left' },
+                        { text: '', style: 'tableHeader', fontSize: 8, alignment: 'left' },
+                        { text: inventario, style: 'tableHeader', fontSize: 8, alignment: 'right' },
+                        { text: ajuste, style: 'tableHeader', fontSize: 8, alignment: 'right' },
+                        { text: '', style: 'tableHeader', fontSize: 8, alignment: 'left' },
+                        { text: '', style: 'tableHeader', fontSize: 8, alignment: 'left' },
+                        { text: '', style: 'tableHeader', fontSize: 8, alignment: 'left' },
+                        { text: valor, style: 'tableHeader', fontSize: 8, alignment: 'right' },
+                        { text: '', style: 'tableHeader', fontSize: 8, alignment: 'left' }
+                    ],
+                ]
+            },
+            layout: 'headerLineOnly' // 'lightHorizontalLines'
+        },
     ];
 
     function Rodape(currentPage, pageCount) {
